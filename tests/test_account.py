@@ -4,7 +4,7 @@ https://github.com/ethereum/pyethapp/blob/7fdec62/
 pyethapp/tests/test_accounts.py
 """
 import json
-import unittest
+import pytest
 from builtins import str
 from uuid import uuid4
 
@@ -14,7 +14,7 @@ from eth_utils import remove_0x_prefix
 from eth_accounts.account import Account
 
 
-class TestAccount(unittest.TestCase):
+class TestAccount:
 
     privkey = None
     password = None
@@ -23,7 +23,7 @@ class TestAccount(unittest.TestCase):
     keystore = None
 
     @classmethod
-    def setUpClass(cls):
+    def setup_class(cls):
         cls.privkey = bytes.fromhex(
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855')
         cls.password = 'secret'
@@ -81,13 +81,13 @@ class TestAccount(unittest.TestCase):
         password = self.password
         account = Account(keystore)
         assert account.locked
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             account.unlock(password + '1234')
         assert account.locked
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             account.unlock('4321' + password)
         assert account.locked
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             account.unlock(password[:len(password) // 2])
         assert account.locked
         account.unlock(password)
@@ -115,7 +115,7 @@ class TestAccount(unittest.TestCase):
             pk.public_key.to_address())
         assert account.privkey is None
         assert account.pubkey is None
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             account.unlock(password + 'fdsa')
         account.unlock(password)
 
