@@ -10,11 +10,18 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ ]
+requirements = (
+    'eth-account<0.4.0',
+    'eth-utils',
+)
 
-setup_requirements = ['pytest-runner', ]
+setup_requirements = (
+    'pytest-runner',
+)
 
-test_requirements = ['pytest>=3', ]
+test_requirements = (
+    'pytest>=3',
+)
 
 setup(
     author="Andre Miras",
