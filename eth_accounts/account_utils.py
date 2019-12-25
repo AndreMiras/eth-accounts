@@ -92,4 +92,3 @@ class AccountUtils:
             deleted_keystore_dir, account_filename)
         shutil.move(account.path, deleted_account_path)
         self._accounts.remove(account)
-
