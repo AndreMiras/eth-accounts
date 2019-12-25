@@ -1,6 +1,6 @@
 import os
 
-from etherollapp.pyethapp_accounts import Account
+from eth_accounts.account import Account
 
 
 class AccountUtils:
