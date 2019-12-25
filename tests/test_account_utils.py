@@ -4,8 +4,8 @@ import unittest
 from tempfile import TemporaryDirectory, mkdtemp
 from unittest import mock
 
-from etherollapp.ethereum_utils import AccountUtils
-from etherollapp.pyethapp_accounts import Account
+from eth_accounts.account_utils import AccountUtils
+from eth_accounts.account import Account
 
 PASSWORD = "password"
 

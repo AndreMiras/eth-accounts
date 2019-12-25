@@ -11,7 +11,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = (
-    'eth-account<0.4.0',
+    'eth-account<0.5.0',
     'eth-utils',
 )
 
