@@ -26,12 +26,22 @@ Local Ethereum keystore management library
 Features
 --------
 
-* TODO
+* Create and manage local Ethereum accounts
 
-Credits
+
+Example
 -------
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+>>> from eth_accounts.account_utils import AccountUtils
+>>>
+>>> account_utils = AccountUtils(keystore_dir="/tmp/keystore")
+>>> account_utils.new_account(password="strong_password")
+<Account(address=0x7f92b97485c361ae50d5f30936fb52abac14fe08, id=None)>
+>>> account_utils.get_account_list()
+[<Account(address=0x7f92b97485c361ae50d5f30936fb52abac14fe08, id=None)>]
+>>> account = account_utils.get_account_list()[0]
+>>> account.privkey
+b'wU\xb1\xd6\xf1,`\x05f\xf1\x93\x04B\x11\x88\xe4i\x9d \xb9z9B\xb4\x9a\x1f\xae\xc4{\xa5\x13\x1f'
+>>> account_utils.delete_account(account)
+>>> account_utils.get_account_list()
+[]
