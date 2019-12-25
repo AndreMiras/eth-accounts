@@ -11,10 +11,10 @@ from uuid import uuid4
 from eth_keys import keys
 from eth_utils import remove_0x_prefix
 
-from eth_accounts.eth_accounts import Account
+from eth_accounts.account import Account
 
 
-class TestAccountUtils(unittest.TestCase):
+class TestAccount(unittest.TestCase):
 
     privkey = None
     password = None
