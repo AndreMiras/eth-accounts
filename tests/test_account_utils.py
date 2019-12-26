@@ -66,18 +66,19 @@ class TestAccountUtils:
         password = PASSWORD
         account = Account.new(password, uuid=None, iterations=1)
         account.path = os.path.join(self.keystore_dir, account.address.hex())
+        account_utils = self.account_utils
         with open(account.path, 'w') as f:
             f.write(account.dump())
         # `listdir()` can raise a `PermissionError`
         with mock.patch('os.listdir') as m_listdir, \
                 pytest.raises(PermissionError):
             m_listdir.side_effect = PermissionError
-            self.account_utils.get_account_list()
+            account_utils.get_account_list()
         # the empty account list should not be catched and loading it again
         # should show the existing account on file system
-        assert len(self.account_utils.get_account_list()) == 1
+        assert len(account_utils.get_account_list()) == 1
         assert (
-            self.account_utils.get_account_list()[0].address == account.address)
+            account_utils.get_account_list()[0].address == account.address)
 
     def test_get_account_list_no_dir(self):
         """
@@ -172,4 +173,3 @@ class TestAccountUtils:
             assert account_utils != AccountUtils.get_or_create(keystore_dir)
             assert AccountUtils.get_or_create(keystore_dir) == \
                 AccountUtils.get_or_create(keystore_dir)
-
