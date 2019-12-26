@@ -2,4 +2,4 @@
 
 __author__ = """Andre Miras"""
 __email__ = ' '
-__version__ = '20191225'
+__version__ = '20191226'
