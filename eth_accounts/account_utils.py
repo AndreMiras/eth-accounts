@@ -92,3 +92,23 @@ class AccountUtils:
             deleted_keystore_dir, account_filename)
         shutil.move(account.path, deleted_account_path)
         self._accounts.remove(account)
+
+    def get_by_address(self, address):
+        """
+        Get an account by its address.
+        Note that even if an account with the given address exists, it might
+        not be found if it is locked.
+        Also, multiple accounts with the same address may exist, in which case
+        the first one is returned (and a warning is logged).
+        :raises: `KeyError` if no matching account can be found
+        """
+        assert len(address) == 20
+        accounts = [acc for acc in self._accounts if acc.address == address]
+        if len(accounts) == 0:
+            raise KeyError(
+                'account not found by address', address=address.hex())
+        elif len(accounts) > 1:
+            log.warning(
+                'multiple accounts with same address found',
+                address=address.hex())
+        return accounts[0]
