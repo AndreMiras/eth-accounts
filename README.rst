@@ -3,10 +3,10 @@ eth-accounts
 ============
 
 
-.. image:: https://img.shields.io/pypi/v/eth_accounts.svg
+.. image:: https://img.shields.io/pypi/v/eth-accounts.svg
         :target: https://pypi.python.org/pypi/eth_accounts
 
-.. image:: https://img.shields.io/travis/AndreMiras/eth-accounts.svg
+.. image:: https://img.shields.io/travis/com/AndreMiras/eth-accounts/develop
         :target: https://travis-ci.com/AndreMiras/eth-accounts
 
 .. image:: https://readthedocs.org/projects/eth-accounts/badge/?version=latest
