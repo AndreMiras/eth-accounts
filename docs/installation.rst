@@ -12,7 +12,7 @@ To install eth-accounts, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install eth_accounts
+    $ pip install eth-accounts
 
 This is the preferred method to install eth-accounts, as it will always install the most recent stable release.
 
@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/AndreMiras/eth_accounts
+    $ git clone git://github.com/AndreMiras/eth-accounts
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl -OJL https://github.com/AndreMiras/eth_accounts/tarball/master
+    $ curl -OJL https://github.com/AndreMiras/eth-accounts/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/AndreMiras/eth_accounts
-.. _tarball: https://github.com/AndreMiras/eth_accounts/tarball/master
+.. _Github repo: https://github.com/AndreMiras/eth-accounts
+.. _tarball: https://github.com/AndreMiras/eth-accounts/tarball/master
