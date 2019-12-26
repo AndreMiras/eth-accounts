@@ -9,6 +9,8 @@ PYTHON_WITH_VERSION=python$(PYTHON_VERSION)
 PYTHON=$(VIRTUAL_ENV)/bin/python
 FLAKE8=$(VIRTUAL_ENV)/bin/flake8
 PYTEST=$(VIRTUAL_ENV)/bin/pytest
+COVERAGE=$(VIRTUAL_ENV)/bin/coverage
+TWINE=$(VIRTUAL_ENV)/bin/twine
 SPHINX_APIDOC=$(VIRTUAL_ENV)/bin/sphinx-apidoc
 
 define BROWSER_PYSCRIPT
@@ -63,7 +65,7 @@ $(VIRTUAL_ENV):
 
 virtualenv: $(VIRTUAL_ENV) ## creates virtualenv for local development
 
-lint: ## check style with flake8
+lint: virtualenv ## check style with flake8
 	$(FLAKE8) eth_accounts tests
 
 test: virtualenv ## run tests quickly with the default Python
@@ -72,13 +74,13 @@ test: virtualenv ## run tests quickly with the default Python
 test-all: ## run tests on every Python version with tox
 	tox
 
-coverage: ## check code coverage quickly with the default Python
-	coverage run --source eth_accounts -m pytest
-	coverage report -m
-	coverage html
+coverage: virtualenv ## check code coverage quickly with the default Python
+	$(COVERAGE) run --source eth_accounts -m pytest
+	$(COVERAGE) report -m
+	$(COVERAGE) html
 	$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
+docs: virtualenv ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/eth_accounts.rst
 	rm -f docs/modules.rst
 	$(SPHINX_APIDOC) -o docs/ eth_accounts
@@ -90,12 +92,12 @@ servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: dist ## package and upload a release
-	twine upload dist/*
+	$(TWINE) upload dist/*
 
-dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
-	twine check dist/*
+dist: virtualenv clean ## builds source and wheel package
+	$(PYTHON) setup.py sdist
+	$(PYTHON) setup.py bdist_wheel
+	$(TWINE) check dist/*
 	ls -l dist
 
 install: clean ## install the package to the active Python's site-packages
