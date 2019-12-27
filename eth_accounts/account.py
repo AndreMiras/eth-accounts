@@ -35,10 +35,7 @@ class Account:
         if password is not None:
             password = to_string(password)
             self.unlock(password)
-        if path is not None:
-            self.path = os.path.abspath(path)
-        else:
-            self.path = None
+        self.path = path and os.path.abspath(path)
 
     @classmethod
     def new(cls, password: bytes, key: bytes = None, uuid=None, path=None,
@@ -129,8 +126,6 @@ class Account:
         """The account's private key or `None` if the account is locked."""
         if not self.locked:
             return self._privkey
-        else:
-            return None
 
     @property
     def pubkey(self):
@@ -138,8 +133,6 @@ class Account:
         if not self.locked:
             pk = keys.PrivateKey(self.privkey)
             return remove_0x_prefix(pk.public_key.to_address())
-        else:
-            return None
 
     @property
     def address(self):
@@ -161,10 +154,7 @@ class Account:
         An optional unique identifier, formatted according to UUID version 4,
         or `None` if the account does not have an id.
         """
-        try:
-            return self.keystore['id']
-        except KeyError:
-            return None
+        return self.keystore.get('id')
 
     @uuid.setter
     def uuid(self, value):
@@ -189,8 +179,5 @@ class Account:
     #         raise ValueError('Locked account cannot sign tx')
 
     def __repr__(self):
-        if self.address is not None:
-            address = encode_hex(self.address)
-        else:
-            address = '?'
+        address = encode_hex(self.address) if self.address else '?'
         return f'<Account(address={address}, id={self.uuid})>'
