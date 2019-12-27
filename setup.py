@@ -50,6 +50,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/AndreMiras/eth_accounts',
-    version='20191226',
+    version='20191227',
     zip_safe=False,
 )
