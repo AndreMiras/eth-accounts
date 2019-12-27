@@ -31,8 +31,6 @@ class Account:
     def __init__(self, keystore: dict, password: bytes = None, path=None):
         self._address = None
         self.keystore = keystore
-        if 'address' in self.keystore:
-            self._address = decode_hex(self.keystore['address'])
         self.locked = True
         if password is not None:
             password = to_string(password)
@@ -149,15 +147,12 @@ class Account:
         The account's address or `None` if the address is not stored in the key
         file and cannot be reconstructed (because the account is locked).
         """
-        if self._address:
-            pass
-        elif 'address' in self.keystore:
-            self._address = decode_hex(self.keystore['address'])
-        elif not self.locked:
-            pk = keys.PrivateKey(self.privkey)
-            self._address = decode_hex(pk.public_key.to_address())
-        else:
-            return None
+        if not self._address:
+            if 'address' in self.keystore:
+                self._address = decode_hex(self.keystore['address'])
+            elif not self.locked:
+                pk = keys.PrivateKey(self.privkey)
+                self._address = decode_hex(pk.public_key.to_address())
         return self._address
 
     @property
