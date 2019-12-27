@@ -4,6 +4,7 @@ https://github.com/ethereum/pyethapp/blob/7fdec62/
 pyethapp/tests/test_accounts.py
 """
 import json
+import tempfile
 import pytest
 from builtins import str
 from uuid import uuid4
@@ -11,7 +12,26 @@ from uuid import uuid4
 from eth_keys import keys
 from eth_utils import remove_0x_prefix
 
-from eth_accounts.account import Account
+from eth_accounts.account import Account, to_string
+
+
+class TestModule:
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        (
+            ("foobar", b"foobar"),
+            (b"foobar", b"foobar"),
+            (1234, b"1234"),
+        )
+    )
+    def test_to_string(self, value, expected):
+        assert to_string(value) == expected
+
+    def test_to_string_exception(self):
+        with pytest.raises(ValueError) as ex_info:
+            to_string({})
+        assert ex_info.value.args == ('Cannot convert to string',)
 
 
 class TestAccount:
@@ -33,6 +53,16 @@ class TestAccount:
             cls.password, cls.privkey, cls.uuid, iterations=1)
         # `account.keystore` might not contain address and id
         cls.keystore = json.loads(cls.account.dump())
+
+    def test_repr(self):
+        assert repr(self.account) == (
+            "<Account(address=0x41ad2bc63a2059f9b623533d87fe99887d794847, "
+            f"id={self.account.uuid})>"
+        )
+        account = Account(keystore={})
+        assert repr(account) == (
+            "<Account(address=?, id=None)>"
+        )
 
     def test_account_creation(self):
         account = self.account
@@ -137,21 +167,30 @@ class TestAccount:
         account = self.account
         keystore = json.loads(
             account.dump(include_address=True, include_id=True))
-        required_keys = set(['crypto', 'version'])
-        assert set(keystore.keys()) == required_keys | set(['address', 'id'])
+        required_keys = {'crypto', 'version'}
+        assert keystore.keys() == required_keys | {'address', 'id'}
         assert remove_0x_prefix(keystore['address']) == account.address.hex()
         assert keystore['id'] == account.uuid
         keystore = json.loads(
             account.dump(include_address=False, include_id=True))
-        assert set(keystore.keys()) == required_keys | set(['id'])
+        assert keystore.keys() == required_keys | {'id'}
         assert keystore['id'] == account.uuid
         keystore = json.loads(
             account.dump(include_address=True, include_id=False))
-        assert set(keystore.keys()) == required_keys | set(['address'])
+        assert keystore.keys() == required_keys | {'address'}
         assert remove_0x_prefix(keystore['address']) == account.address.hex()
         keystore = json.loads(
             account.dump(include_address=False, include_id=False))
-        assert set(keystore.keys()) == required_keys
+        assert keystore.keys() == required_keys
+
+    def test_dump_to_disk(self):
+        account = self.account
+        with tempfile.NamedTemporaryFile() as temp_file:
+            account.path = temp_file.name
+            account.dump_to_disk()
+            with open(account.path) as f:
+                keystore = json.load(f)
+        assert keystore.keys() == {'crypto', 'version', 'address', 'id'}
 
     def test_uuid_setting(self):
         account = self.account

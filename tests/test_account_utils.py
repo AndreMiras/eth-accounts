@@ -173,3 +173,70 @@ class TestAccountUtils:
             assert account_utils != AccountUtils.get_or_create(keystore_dir)
             assert AccountUtils.get_or_create(keystore_dir) == \
                 AccountUtils.get_or_create(keystore_dir)
+
+    def test_get_by_address(self):
+        """Makes sure we can retrieve existing account by address."""
+        account = self.account_utils.new_account(PASSWORD, iterations=1)
+        assert account == self.account_utils.get_by_address(account.address)
+
+    def test_get_by_address_no_match(self):
+        """
+        Makes sure an exception is raised when trying to
+        retrieve an account that's not available.
+        """
+        account = self.account_utils.new_account(PASSWORD, iterations=1)
+        assert account == self.account_utils.get_by_address(account.address)
+        # that account isn't added to the account utils
+        account = Account.new(PASSWORD, uuid=None, iterations=1)
+        with pytest.raises(KeyError) as ex_info:
+            self.account_utils.get_by_address(account.address)
+        assert ex_info.value.args == (
+            f"account with address {account.address.hex()} not found",
+        )
+
+    def test_get_by_address_multiple_match(self):
+        """
+        Verifies a warning is sent on `get_by_address()` call with multiple
+        accounts match.
+        """
+        account = Account.new(PASSWORD, uuid=None, iterations=1)
+        account.path = os.path.join(self.keystore_dir, account.address.hex())
+        self.account_utils.add_account(account)
+        self.account_utils.add_account(account)
+        with mock.patch("eth_accounts.account_utils.log.warning") as m_warning:
+            assert account == self.account_utils.get_by_address(
+                account.address)
+        assert m_warning.call_args_list == [
+            mock.call(
+                "multiple accounts with same address "
+                f"{account.address.hex()} found")
+        ]
+
+    def test_update_account_password(self):
+        """Verifies updating account password works."""
+        account_utils = self.account_utils
+        current_password = "password"
+        # weak account, but fast creation
+        security_ratio = 1
+        account = account_utils.new_account(current_password, security_ratio)
+        # first try when the account is already unlocked
+        assert account.locked is False
+        new_password = "new_password"
+        # on unlocked account the current_password is optional
+        account_utils.update_account_password(
+            account, new_password, current_password=None)
+        # verify it worked
+        account.lock()
+        account.unlock(new_password)
+        assert account.locked is False
+        # now try when the account is first locked
+        account.lock()
+        current_password = "wrong password"
+        with pytest.raises(ValueError) as ex_info:
+            account_utils.update_account_password(
+                account, new_password, current_password)
+        assert ex_info.value.args == ('MAC mismatch',)
+        current_password = new_password
+        account_utils.update_account_password(
+            account, new_password, current_password)
+        assert account.locked is False

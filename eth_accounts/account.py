@@ -31,16 +31,11 @@ class Account:
     def __init__(self, keystore: dict, password: bytes = None, path=None):
         self._address = None
         self.keystore = keystore
-        if 'address' in self.keystore:
-            self._address = decode_hex(self.keystore['address'])
         self.locked = True
         if password is not None:
             password = to_string(password)
             self.unlock(password)
-        if path is not None:
-            self.path = os.path.abspath(path)
-        else:
-            self.path = None
+        self.path = path and os.path.abspath(path)
 
     @classmethod
     def new(cls, password: bytes, key: bytes = None, uuid=None, path=None,
@@ -98,6 +93,11 @@ class Account:
             d['id'] = str(self.uuid)
         return json.dumps(d)
 
+    def dump_to_disk(self, include_address=True, include_id=True):
+        """Dumps account info to disk."""
+        with open(self.path, 'w') as f:
+            f.write(self.dump(include_address, include_id))
+
     def unlock(self, password: bytes):
         """
         Unlock the account with a password.
@@ -131,8 +131,6 @@ class Account:
         """The account's private key or `None` if the account is locked."""
         if not self.locked:
             return self._privkey
-        else:
-            return None
 
     @property
     def pubkey(self):
@@ -140,8 +138,6 @@ class Account:
         if not self.locked:
             pk = keys.PrivateKey(self.privkey)
             return remove_0x_prefix(pk.public_key.to_address())
-        else:
-            return None
 
     @property
     def address(self):
@@ -149,15 +145,12 @@ class Account:
         The account's address or `None` if the address is not stored in the key
         file and cannot be reconstructed (because the account is locked).
         """
-        if self._address:
-            pass
-        elif 'address' in self.keystore:
-            self._address = decode_hex(self.keystore['address'])
-        elif not self.locked:
-            pk = keys.PrivateKey(self.privkey)
-            self._address = decode_hex(pk.public_key.to_address())
-        else:
-            return None
+        if not self._address:
+            if 'address' in self.keystore:
+                self._address = decode_hex(self.keystore['address'])
+            elif not self.locked:
+                pk = keys.PrivateKey(self.privkey)
+                self._address = decode_hex(pk.public_key.to_address())
         return self._address
 
     @property
@@ -166,10 +159,7 @@ class Account:
         An optional unique identifier, formatted according to UUID version 4,
         or `None` if the account does not have an id.
         """
-        try:
-            return self.keystore['id']
-        except KeyError:
-            return None
+        return self.keystore.get('id')
 
     @uuid.setter
     def uuid(self, value):
@@ -194,8 +184,5 @@ class Account:
     #         raise ValueError('Locked account cannot sign tx')
 
     def __repr__(self):
-        if self.address is not None:
-            address = encode_hex(self.address)
-        else:
-            address = '?'
+        address = encode_hex(self.address) if self.address else '?'
         return f'<Account(address={address}, id={self.uuid})>'

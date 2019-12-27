@@ -3,11 +3,14 @@ eth-accounts
 ============
 
 
-.. image:: https://img.shields.io/pypi/v/eth_accounts.svg
+.. image:: https://img.shields.io/pypi/v/eth-accounts.svg
         :target: https://pypi.python.org/pypi/eth_accounts
 
-.. image:: https://img.shields.io/travis/AndreMiras/eth-accounts.svg
+.. image:: https://img.shields.io/travis/com/AndreMiras/eth-accounts/develop
         :target: https://travis-ci.com/AndreMiras/eth-accounts
+
+.. image:: https://coveralls.io/repos/github/AndreMiras/eth-accounts/badge.svg?branch=develop
+        :target: https://coveralls.io/github/AndreMiras/eth-accounts?branch=develop
 
 .. image:: https://readthedocs.org/projects/eth-accounts/badge/?version=latest
         :target: https://eth-accounts.readthedocs.io/en/latest/?badge=latest
@@ -27,6 +30,9 @@ Features
 --------
 
 * Create and manage local Ethereum accounts
+* Account encryption (password)
+* Configurable PBKDF2 iterations
+* Transaction signature (TODO)
 
 
 Example
