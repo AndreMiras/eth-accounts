@@ -53,6 +53,16 @@ class TestAccount:
         # `account.keystore` might not contain address and id
         cls.keystore = json.loads(cls.account.dump())
 
+    def test_repr(self):
+        assert repr(self.account) == (
+            "<Account(address=0x41ad2bc63a2059f9b623533d87fe99887d794847, "
+            f"id={self.account.uuid})>"
+        )
+        account = Account(keystore={})
+        assert repr(account) == (
+            "<Account(address=?, id=None)>"
+        )
+
     def test_account_creation(self):
         account = self.account
         privkey = self.privkey
