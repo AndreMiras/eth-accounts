@@ -11,7 +11,26 @@ from uuid import uuid4
 from eth_keys import keys
 from eth_utils import remove_0x_prefix
 
-from eth_accounts.account import Account
+from eth_accounts.account import Account, to_string
+
+
+class TestModule:
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        (
+            ("foobar", b"foobar"),
+            (b"foobar", b"foobar"),
+            (1234, b"1234"),
+        )
+    )
+    def test_to_string(self, value, expected):
+        assert to_string(value) == expected
+
+    def test_to_string_exception(self):
+        with pytest.raises(ValueError) as ex_info:
+            to_string({})
+        assert ex_info.value.args == ('Cannot convert to string',)
 
 
 class TestAccount:
