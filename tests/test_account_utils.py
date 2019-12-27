@@ -211,3 +211,32 @@ class TestAccountUtils:
                 "multiple accounts with same address "
                 f"{account.address.hex()} found")
         ]
+
+    def test_update_account_password(self):
+        """Verifies updating account password works."""
+        account_utils = self.account_utils
+        current_password = "password"
+        # weak account, but fast creation
+        security_ratio = 1
+        account = account_utils.new_account(current_password, security_ratio)
+        # first try when the account is already unlocked
+        assert account.locked is False
+        new_password = "new_password"
+        # on unlocked account the current_password is optional
+        account_utils.update_account_password(
+            account, new_password, current_password=None)
+        # verify it worked
+        account.lock()
+        account.unlock(new_password)
+        assert account.locked is False
+        # now try when the account is first locked
+        account.lock()
+        current_password = "wrong password"
+        with pytest.raises(ValueError) as ex_info:
+            account_utils.update_account_password(
+                account, new_password, current_password)
+        assert ex_info.value.args == ('MAC mismatch',)
+        current_password = new_password
+        account_utils.update_account_password(
+            account, new_password, current_password)
+        assert account.locked is False

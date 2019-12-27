@@ -4,6 +4,7 @@ https://github.com/ethereum/pyethapp/blob/7fdec62/
 pyethapp/tests/test_accounts.py
 """
 import json
+import tempfile
 import pytest
 from builtins import str
 from uuid import uuid4
@@ -166,21 +167,30 @@ class TestAccount:
         account = self.account
         keystore = json.loads(
             account.dump(include_address=True, include_id=True))
-        required_keys = set(['crypto', 'version'])
-        assert set(keystore.keys()) == required_keys | set(['address', 'id'])
+        required_keys = {'crypto', 'version'}
+        assert keystore.keys() == required_keys | {'address', 'id'}
         assert remove_0x_prefix(keystore['address']) == account.address.hex()
         assert keystore['id'] == account.uuid
         keystore = json.loads(
             account.dump(include_address=False, include_id=True))
-        assert set(keystore.keys()) == required_keys | set(['id'])
+        assert keystore.keys() == required_keys | {'id'}
         assert keystore['id'] == account.uuid
         keystore = json.loads(
             account.dump(include_address=True, include_id=False))
-        assert set(keystore.keys()) == required_keys | set(['address'])
+        assert keystore.keys() == required_keys | {'address'}
         assert remove_0x_prefix(keystore['address']) == account.address.hex()
         keystore = json.loads(
             account.dump(include_address=False, include_id=False))
-        assert set(keystore.keys()) == required_keys
+        assert keystore.keys() == required_keys
+
+    def test_dump_to_disk(self):
+        account = self.account
+        with tempfile.NamedTemporaryFile() as temp_file:
+            account.path = temp_file.name
+            account.dump_to_disk()
+            with open(account.path) as f:
+                keystore = json.load(f)
+        assert keystore.keys() == {'crypto', 'version', 'address', 'id'}
 
     def test_uuid_setting(self):
         account = self.account

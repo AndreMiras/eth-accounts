@@ -116,3 +116,21 @@ class AccountUtils:
             log.warning(
                 f"multiple accounts with same address {address.hex()} found")
         return accounts[0]
+
+    def update_account_password(
+            self, account, new_password, current_password=None):
+        """
+        Updates the current account instance.
+        The current_password is optional if the account is already unlocked.
+        """
+        if current_password is not None:
+            account.unlock(current_password)
+        iterations = account.keystore['crypto']['kdfparams']['c']
+        new_account = Account.new(
+            password=new_password,
+            key=account.privkey,
+            uuid=account.uuid,
+            path=account.path,
+            iterations=iterations)
+        account.keystore = new_account.keystore
+        account.dump_to_disk()
