@@ -1,6 +1,10 @@
 import os
 
 from eth_accounts.account import Account
+import logging
+
+
+log = logging.getLogger(__name__)
 
 
 class AccountUtils:
@@ -92,3 +96,23 @@ class AccountUtils:
             deleted_keystore_dir, account_filename)
         shutil.move(account.path, deleted_account_path)
         self._accounts.remove(account)
+
+    def get_by_address(self, address):
+        """
+        Gets an account by its address.
+        Note that even if an account with the given address exists,
+        it might not be found if it is locked.
+        Also, multiple accounts with the same address may exist,
+        in which case the first one is returned (and a warning is logged).
+        :raises: `KeyError` if no matching account can be found
+        """
+        assert len(address) == 20
+        accounts = [
+            account for account in self._accounts if account.address == address
+        ]
+        if len(accounts) == 0:
+            raise KeyError(f"account with address {address.hex()} not found")
+        elif len(accounts) > 1:
+            log.warning(
+                f"multiple accounts with same address {address.hex()} found")
+        return accounts[0]
