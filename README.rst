@@ -30,6 +30,9 @@ Features
 --------
 
 * Create and manage local Ethereum accounts
+* Account encryption (password)
+* Configurable PBKDF2 iterations
+* Transaction signature (TODO)
 
 
 Example
