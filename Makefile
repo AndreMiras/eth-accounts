@@ -5,10 +5,13 @@ PIP=$(VIRTUAL_ENV)/bin/pip
 PYTHON_MAJOR_VERSION=3
 PYTHON_MINOR_VERSION=7
 PYTHON_VERSION=$(PYTHON_MAJOR_VERSION).$(PYTHON_MINOR_VERSION)
+PYTHON_MAJOR_MINOR=$(PYTHON_MAJOR_VERSION)$(PYTHON_MINOR_VERSION)
 PYTHON_WITH_VERSION=python$(PYTHON_VERSION)
 PYTHON=$(VIRTUAL_ENV)/bin/python
 FLAKE8=$(VIRTUAL_ENV)/bin/flake8
 PYTEST=$(VIRTUAL_ENV)/bin/pytest
+# only report coverage for one Python version in tox testing
+COVERALLS=.tox/py$(PYTHON_MAJOR_MINOR)/bin/coveralls
 COVERAGE=$(VIRTUAL_ENV)/bin/coverage
 TWINE=$(VIRTUAL_ENV)/bin/twine
 SPHINX_APIDOC=$(VIRTUAL_ENV)/bin/sphinx-apidoc
@@ -69,10 +72,11 @@ lint: virtualenv ## check style with flake8
 	$(FLAKE8) eth_accounts tests
 
 test: virtualenv ## run tests quickly with the default Python
-	$(PYTEST)
+	$(PYTEST) --cov eth_accounts/ --cov-report html tests/
 
 test-all: ## run tests on every Python version with tox
 	tox
+	@if [ -n "$$CI" ] && [ -f $(COVERALLS) ]; then $(COVERALLS); fi \
 
 coverage: virtualenv ## check code coverage quickly with the default Python
 	$(COVERAGE) run --source eth_accounts -m pytest

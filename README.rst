@@ -9,6 +9,9 @@ eth-accounts
 .. image:: https://img.shields.io/travis/com/AndreMiras/eth-accounts/develop
         :target: https://travis-ci.com/AndreMiras/eth-accounts
 
+.. image:: https://coveralls.io/repos/github/AndreMiras/eth-accounts/badge.svg?branch=develop
+        :target: https://coveralls.io/github/AndreMiras/eth-accounts?branch=develop
+
 .. image:: https://readthedocs.org/projects/eth-accounts/badge/?version=latest
         :target: https://eth-accounts.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
