@@ -31,8 +31,6 @@ class Account:
     def __init__(self, keystore: dict, password: bytes = None, path=None):
         self._address = None
         self.keystore = keystore
-        if 'address' in self.keystore:
-            self._address = decode_hex(self.keystore['address'])
         self.locked = True
         if password is not None:
             password = to_string(password)
