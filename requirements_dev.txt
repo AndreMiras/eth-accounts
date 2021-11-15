@@ -3,7 +3,7 @@ coveralls
 eth-account<0.5.0
 eth-utils
 flake8==3.7.8
-pip==19.2.3
+pip==21.1
 pytest==4.6.5
 pytest-cov
 pytest-runner==5.1
